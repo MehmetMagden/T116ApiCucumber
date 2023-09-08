@@ -1,6 +1,5 @@
-package stepDfinitions;
+package stepDefinitions;
 
-import com.google.gson.JsonObject;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;

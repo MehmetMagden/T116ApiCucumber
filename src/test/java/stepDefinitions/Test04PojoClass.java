@@ -1,11 +1,14 @@
-package stepDfinitions;
+package stepDefinitions;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
+import pojos.JsonPojo;
+import pojos.heroPojo;
 
 import static io.restassured.RestAssured.given;
 
@@ -72,8 +75,53 @@ request gonderdigimizde
                 .log().all()            // oluşturuduğumuz requesti toplu halde görmek için
                 .post(fullPath);        // parametrelerle beraber, request type girişi
 
-        System.out.println("************ Response **************");
-        response.prettyPrint();
+//        System.out.println("************ Response **************");
+//        response.prettyPrint();
+
+
+        heroPojo responseHeroPojo = response.as(heroPojo.class);
+        System.out.println(responseHeroPojo);
+
+
+        //            donen Response’un,
+        //            status code’unun 200,
+        //            ve content type’inin application-json, ve response body’sindeki
+        //            “firstname”in,“Ahmet”, ve “lastname”in, “Bulut”,
+        //            ve “totalprice”in,500,
+        //            ve “depositpaid”in,false,
+        //            ve “checkin” tarihinin 2021-06-01 ve “checkout” tarihinin 2021-06-10 ve “additionalneeds”in,“wi-fi” olduğunu test edin (edited)
+
+//{
+//    "bookingid": 4979,
+//    "booking": {
+//        "firstname": "Ahmet",
+//        "lastname": "Bulut",
+//        "totalprice": 500,
+//        "depositpaid": false,
+//        "bookingdates": {
+//            "checkin": "2021-06-01",
+//            "checkout": "2021-06-10"
+//        },
+//        "additionalneeds": "wi-fi"
+//    }
+//}
+        Assert.assertEquals("Ahmet",responseHeroPojo.getBooking().getFirstname());
+        Assert.assertEquals("Bulut",responseHeroPojo.getBooking().getLastname());
+        Assert.assertEquals(500,responseHeroPojo.getBooking().getTotalprice());
+        Assert.assertEquals(false,responseHeroPojo.getBooking().isDepositpaid());
+        Assert.assertEquals("2021-06-01",responseHeroPojo.getBooking().getBookingdates().getCheckin());
+        Assert.assertEquals("2021-06-10",responseHeroPojo.getBooking().getBookingdates().getCheckout());
+        Assert.assertEquals("wi-fi",responseHeroPojo.getBooking().getAdditionalneeds());
+
+
+        // responsı https://www.jsonschema2pojo.org/ sitesinden oluşturduğumuz pojo classlar ile test etme
+
+        JsonPojo responseJsonObject = response.as(JsonPojo.class);
+
+        Assert.assertEquals("Ahmet",responseJsonObject.booking.firstname);
+        Assert.assertEquals("Bulut",responseJsonObject.booking.lastname);
+        //responseJsonObject.booking.bookingdates.checkin
+        Assert.assertEquals("2021-06-01",responseJsonObject.booking.bookingdates.checkin);
 
 
     }
